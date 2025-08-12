@@ -3,10 +3,10 @@
 
 (function () {
   const routes = {
-    '/': 'home',
-    '/filereport': 'filereport',
-    '/abt': 'abt',
-    '/utils': 'utils'
+    '/RSCWebPage/': 'home',
+    '/RSCWebPage/filereport': 'filereport',
+    '/RSCWebPage/abt': 'abt',
+    '/RSCWebPage/utils': 'utils'
   };
 
   function showPage(id) {
