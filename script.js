@@ -5,8 +5,7 @@
   const routes = {
     '/RSCWebPage/': 'home',
     '/RSCWebPage/filereport': 'filereport',
-    '/RSCWebPage/abt': 'abt',
-    '/RSCWebPage/utils': 'utils'
+    '/RSCWebPage/abt': 'abt'
   };
 
   function showPage(id) {
