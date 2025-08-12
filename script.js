@@ -42,12 +42,18 @@
 
   // Intercept nav clicks
   document.querySelectorAll('.nav-btn').forEach(a => {
-    a.addEventListener('click', function (ev) {
-      ev.preventDefault();
-      const path = a.getAttribute('data-path') || a.getAttribute('href') || '/';
-      handlePath(path);
-    });
+  a.addEventListener('click', function (ev) {
+    const path = a.getAttribute('data-path') || a.getAttribute('href');
+    // If href is an absolute URL (starts with http or https), don't prevent default
+    if (path.startsWith('http://') || path.startsWith('https://')) {
+      // Let the browser navigate normally
+      return;
+    }
+    ev.preventDefault();
+    handlePath(path, false);
   });
+});
+
 
   // Handle browser back/forward
   window.addEventListener('popstate', function () {
