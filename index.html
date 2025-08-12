@@ -5,6 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>RSC — Official Site</title>
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Firebase scripts -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCQLM5dle_c3ZEdK4SrxwE4FRj2KOLoVDU",
+      authDomain: "rsc-sd-b-a-d.firebaseapp.com",
+      projectId: "rsc-sd-b-a-d",
+      storageBucket: "rsc-sd-b-a-d.firebasestorage.app",
+      messagingSenderId: "304652298603",
+      appId: "1:304652298603:web:bdcb6e1c1f6e10de4b842e",
+      measurementId: "G-EX1Y501C6Z"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    window.submitRSCReport = async function() {
+      const urlInput = document.getElementById('resourceUrl').value.trim();
+      const bodyInput = document.getElementById('reportDesc').value.trim();
+
+      if (!urlInput || !bodyInput) {
+        alert('Please fill in all fields before submitting.');
+        return;
+      }
+
+      // Random report number (e.g. 6-digit)
+      const reportNum = Math.floor(100000 + Math.random() * 900000);
+
+      try {
+        await addDoc(collection(db, "reports"), {
+          reporturl: urlInput,
+          reportnum: reportNum,
+          reportbody: bodyInput,
+          createdAt: new Date()
+        });
+        alert(`Report #${reportNum} submitted successfully.`);
+        // Clear inputs
+        document.getElementById('resourceUrl').value = '';
+        document.getElementById('reportDesc').value = '';
+      } catch (e) {
+        alert("Failed to submit report: " + e.message);
+      }
+    };
+  </script>
+
 </head>
 <body>
   <header class="top-banner" role="banner">
@@ -26,7 +74,7 @@
 
     <section id="filereport" class="page" hidden>
       <h2>File a RSC License Violation</h2>
-      <p>If you believe someone violated the RSC License, fill the details below. This demo won't actually submit anywhere.</p>
+      <p>If you believe someone violated the RSC License, fill the details below.</p>
       <form id="reportForm" onsubmit="return false;">
         <label>Reported Resource URL<br>
           <input type="text" id="resourceUrl" placeholder="https://example.com/asset" />
@@ -36,8 +84,7 @@
           <textarea id="reportDesc" rows="6" placeholder="Explain the violation..."></textarea>
         </label>
         <br>
-        <button type="button" class="action-btn" id="fakeSubmit">Submit Report (demo)</button>
-        <p class="note">This demo does not transmit data anywhere. On a real site you'd process/record this server-side.</p>
+        <button type="button" class="action-btn" id="fakeSubmit">Submit Report</button>
       </form>
     </section>
 
@@ -60,5 +107,11 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    // Override previous demo submit button behavior
+    document.getElementById('fakeSubmit').addEventListener('click', () => {
+      window.submitRSCReport();
+    });
+  </script>
 </body>
 </html>
