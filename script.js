@@ -47,15 +47,4 @@
     const id = routes[p] || 'home';
     showPage(id);
   });
-
-  // demo form submit
-  const fakeSubmit = document.getElementById('fakeSubmit');
-  if (fakeSubmit) {
-    fakeSubmit.addEventListener('click', () => {
-      alert('Report submitted (demo). On a real site this would be sent to the server.');
-      // clear form
-      document.getElementById('resourceUrl').value = '';
-      document.getElementById('reportDesc').value = '';
-    });
-  }
 })();
