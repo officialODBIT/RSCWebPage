@@ -1,49 +1,58 @@
-// Simple client-side router: show sections based on path (/, /filereport, /abt, /utils)
-// keeps behavior single-page while updating the URL so links point to the requested path.
-
 (function () {
+  const basePath = '/RSCWebPage';
+
   const routes = {
-    '/RSCWebPage/': 'home',
-    '/RSCWebPage/filereport': 'filereport',
-    '/RSCWebPage/abt': 'abt'
+    '/': 'home',
+    '/filereport': 'filereport',
+    '/abt': 'abt',
+    '/utils': 'utils'  // <-- Added utils route here
   };
+
+  function normalizePath(path) {
+    // Remove basePath prefix if present, fallback to '/'
+    if (path.startsWith(basePath)) {
+      let p = path.slice(basePath.length);
+      return p === '' ? '/' : p;
+    }
+    return path;
+  }
 
   function showPage(id) {
     document.querySelectorAll('.page').forEach(s => {
-      if (s.id === id) s.hidden = false;
-      else s.hidden = true;
+      s.hidden = s.id !== id;
     });
   }
 
   function handlePath(path, replace = false) {
-    const id = routes[path] || 'home';
+    // Normalize path to keys in routes
+    const normPath = normalizePath(path);
+    const id = routes[normPath] || 'home';
     showPage(id);
-    if (replace) history.replaceState({}, '', path);
-    else history.pushState({}, '', path);
+    if (replace) history.replaceState({}, '', basePath + (normPath === '/' ? '/' : normPath));
+    else history.pushState({}, '', basePath + (normPath === '/' ? '/' : normPath));
   }
 
-  // initial load: pick the page based on location.pathname
+  // On initial load
   const initial = window.location.pathname;
-  if (routes[initial]) {
-    // replaceState so back button behavior is OK
+  if (routes[normalizePath(initial)]) {
     handlePath(initial, true);
   } else {
     handlePath('/', true);
   }
 
-  // intercept nav clicks (so anchor hrefs still show the path but we don't reload)
+  // Intercept nav clicks
   document.querySelectorAll('.nav-btn').forEach(a => {
     a.addEventListener('click', function (ev) {
-      const path = a.getAttribute('data-path') || a.getAttribute('href');
       ev.preventDefault();
-      handlePath(path, false);
+      const path = a.getAttribute('data-path') || a.getAttribute('href') || '/';
+      handlePath(path);
     });
   });
 
-  // support browser back/forward
+  // Handle browser back/forward
   window.addEventListener('popstate', function () {
     const p = window.location.pathname;
-    const id = routes[p] || 'home';
+    const id = routes[normalizePath(p)] || 'home';
     showPage(id);
   });
 })();
