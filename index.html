@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RSC — Official Site</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top-banner" role="banner">
+    <div class="banner-left">
+      <span class="banner-title">An official website of the RSC</span>
+    </div>
+    <nav class="banner-nav" role="navigation" aria-label="Main navigation">
+      <a class="nav-btn" href="/filereport" data-path="/filereport">File a RSC License Violation</a>
+      <a class="nav-btn" href="/abt" data-path="/abt">About</a>
+      <a class="nav-btn" href="/utils" data-path="/utils">Utilities</a>
+    </nav>
+  </header>
+
+  <main id="content" role="main">
+    <section id="home" class="page" hidden>
+      <h2>Welcome to RSC</h2>
+      <p>This is the Random Stuff/Stuff Community official landing page. Use the buttons above to navigate.</p>
+    </section>
+
+    <section id="filereport" class="page" hidden>
+      <h2>File a RSC License Violation</h2>
+      <p>If you believe someone violated the RSC License, fill the details below. This demo won't actually submit anywhere.</p>
+      <form id="reportForm" onsubmit="return false;">
+        <label>Reported Resource URL<br>
+          <input type="text" id="resourceUrl" placeholder="https://example.com/asset" />
+        </label>
+        <br>
+        <label>Description<br>
+          <textarea id="reportDesc" rows="6" placeholder="Explain the violation..."></textarea>
+        </label>
+        <br>
+        <button type="button" class="action-btn" id="fakeSubmit">Submit Report (demo)</button>
+        <p class="note">This demo does not transmit data anywhere. On a real site you'd process/record this server-side.</p>
+      </form>
+    </section>
+
+    <section id="abt" class="page" hidden>
+      <h2>About RSC</h2>
+      <p>RSC — Random Stuff/Stuff Community — is a community-run collective for sharing small personal projects. The RSC License governs redistribution of code and assets.</p>
+    </section>
+
+    <section id="utils" class="page" hidden>
+      <h2>Utilities</h2>
+      <ul>
+        <li><strong>License checker</strong> — (demo) verify license text</li>
+        <li><strong>Contact</strong> — reach out to the RSC admins</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <small>© 2025 Random Stuff Community</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
