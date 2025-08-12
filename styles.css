@@ -1,0 +1,110 @@
+:root {
+  --banner-color: #ffd83d; /* yellow */
+  --bg: #f3f1e6;
+  --accent: #444;
+  --muted: #666;
+  --content-width: 900px;
+}
+
+* { box-sizing: border-box; }
+html,body { height: 100%; margin: 0; font-family: "Times New Roman", Georgia, serif; background: var(--bg); color: var(--accent); }
+
+.top-banner {
+  height: 50px;
+  background: var(--banner-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  border-bottom: 2px solid #bbb;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.banner-title {
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 0.6px;
+}
+
+.banner-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Old-school beveled buttons */
+.nav-btn {
+  display: inline-block;
+  padding: 6px 10px;
+  text-decoration: none;
+  color: var(--accent);
+  background: linear-gradient(#f7f7f7, #e7e7e7);
+  border: 2px solid #777;
+  border-top-color: #fff;
+  border-left-color: #fff;
+  border-bottom-color: #777;
+  border-right-color: #777;
+  font-size: 13px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+
+.nav-btn:active {
+  border-top-color: #777;
+  border-left-color: #777;
+  border-bottom-color: #fff;
+  border-right-color: #fff;
+}
+
+/* content area */
+#content {
+  max-width: var(--content-width);
+  margin: 28px auto;
+  padding: 18px;
+  background: #fff;
+  border: 2px solid #cfcac0;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.04);
+}
+
+h2 { margin-top: 0; font-size: 20px; }
+
+label { display: block; margin: 8px 0; font-size: 14px; }
+input[type="text"], textarea {
+  width: 100%;
+  padding: 6px;
+  border: 2px inset #ddd;
+  font-family: inherit;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.action-btn {
+  padding: 8px 12px;
+  border: 2px solid #777;
+  background: linear-gradient(#f7f7f7, #e7e7e7);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.action-btn:active {
+  border-top-color: #777;
+  border-left-color: #777;
+  border-bottom-color: #fff;
+  border-right-color: #fff;
+}
+
+.note { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+.site-footer {
+  max-width: var(--content-width);
+  margin: 20px auto;
+  padding: 8px 18px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* visible page */
+.page[hidden] { display: none; }
