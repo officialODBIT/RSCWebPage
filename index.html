@@ -89,6 +89,10 @@
     position: relative;
     padding-left: 16px;
   }
+  /* Hide arrow for non-collapsible license-template */
+  #tree-license-template::before {
+    content: none !important;
+  }
   .treeview li::before {
     content: "▶";
     position: absolute;
@@ -105,6 +109,10 @@
     display: none;
     margin-left: 10px;
   }
+  /* License template always visible */
+  #tree-license-template > ul {
+    display: block !important;
+  }
   .treeview li.expanded > ul {
     display: block;
   }
@@ -115,6 +123,7 @@
     border-radius: 4px;
     white-space: pre-wrap;
     word-wrap: break-word;
+    cursor: pointer;
   }
 </style>
 </head>
@@ -123,7 +132,6 @@
 <header class="top-banner" role="banner">
   An official website of the RSC
 </header>
-
 
 
 <main role="main">
@@ -161,7 +169,7 @@
           <ul>
             <li tabindex="0" aria-label="license template" id="tree-license-template">
               license template
-              <pre>
+              <pre id="license-pre" title="Click to copy license text">
 RSC License
 
 Copyright (c) 2025 Random Stuff Community Corp.
@@ -239,6 +247,9 @@ SOFTWARE.
 <script>
   // Treeview expand/collapse
   document.querySelectorAll(".treeview li").forEach(li => {
+    // Skip license template toggle (do nothing)
+    if (li.id === "tree-license-template") return;
+
     li.addEventListener("click", () => {
       li.classList.toggle("expanded");
       const expanded = li.classList.contains("expanded");
@@ -252,6 +263,17 @@ SOFTWARE.
         li.setAttribute("aria-expanded", expanded);
       }
     });
+  });
+
+  // Copy license text on <pre> click
+  const licensePre = document.getElementById("license-pre");
+  licensePre.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(licensePre.textContent.trim());
+      alert("RSC License copied to clipboard!");
+    } catch {
+      alert("Failed to copy license.");
+    }
   });
 </script>
 
