@@ -1,117 +1,275 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RSC — Official Site</title>
-  <link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>RSC Official Website</title>
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    color: #000;
+  }
+  .top-banner {
+    background-color: #ffeb3b;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-weight: bold;
+    font-size: 18px;
+  }
+  nav.banner-nav {
+    display: flex;
+    background: #fff;
+    padding: 10px 20px;
+    gap: 15px;
+  }
+  nav.banner-nav a {
+    text-decoration: none;
+    color: #000;
+    background: #eee;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  nav.banner-nav a:hover {
+    background-color: #ddd;
+  }
+  main {
+    padding: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    background: #fff;
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+  /* Style for the report form */
+  form label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+  }
+  form input[type="text"],
+  form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    font-family: inherit;
+  }
+  form textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  form button {
+    margin-top: 15px;
+    background-color: #ffeb3b;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  form button:hover {
+    background-color: #f7da00;
+  }
 
-  <!-- Firebase scripts -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCQLM5dle_c3ZEdK4SrxwE4FRj2KOLoVDU",
-      authDomain: "rsc-sd-b-a-d.firebaseapp.com",
-      projectId: "rsc-sd-b-a-d",
-      storageBucket: "rsc-sd-b-a-d.firebasestorage.app",
-      messagingSenderId: "304652298603",
-      appId: "1:304652298603:web:bdcb6e1c1f6e10de4b842e",
-      measurementId: "G-EX1Y501C6Z"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.submitRSCReport = async function() {
-      const urlInput = document.getElementById('resourceUrl').value.trim();
-      const bodyInput = document.getElementById('reportDesc').value.trim();
-
-      if (!urlInput || !bodyInput) {
-        alert('Please fill in all fields before submitting.');
-        return;
-      }
-
-      // Random report number (e.g. 6-digit)
-      const reportNum = Math.floor(100000 + Math.random() * 900000);
-
-      try {
-        await addDoc(collection(db, "reports"), {
-          reporturl: urlInput,
-          reportnum: reportNum,
-          reportbody: bodyInput,
-          createdAt: new Date()
-        });
-        alert(`Report #${reportNum} submitted successfully.`);
-        // Clear inputs
-        document.getElementById('resourceUrl').value = '';
-        document.getElementById('reportDesc').value = '';
-      } catch (e) {
-        alert("Failed to submit report: " + e.message);
-      }
-    };
-  </script>
-
+  /* Utils treeview */
+  .treeview ul {
+    list-style: none;
+    padding-left: 20px;
+  }
+  .treeview li {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    padding-left: 16px;
+  }
+  .treeview li::before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 12px;
+    line-height: 16px;
+    transition: transform 0.2s ease;
+  }
+  .treeview li.expanded::before {
+    transform: rotate(90deg);
+  }
+  .treeview li ul {
+    display: none;
+    margin-left: 10px;
+  }
+  .treeview li.expanded > ul {
+    display: block;
+  }
+  pre {
+    background: #eee;
+    padding: 15px;
+    overflow-x: auto;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+</style>
 </head>
 <body>
-  <header class="top-banner" role="banner">
-    <div class="banner-left">
-      <span class="banner-title">An official website of the RSC</span>
-    </div>
-    <nav class="banner-nav" role="navigation" aria-label="Main navigation">
-      <a class="nav-btn" href="/filereport" data-path="/filereport">File a RSC License Violation</a>
-      <a class="nav-btn" href="/abt" data-path="/abt">About</a>
-      <a class="nav-btn" href="https://rscommunity.odbit.club/utils">Utilities</a>
-    </nav>
-  </header>
 
-  <main id="content" role="main">
-    <section id="home" class="page" hidden>
-      <h2>Welcome to RSC</h2>
-      <p>This is the Random Stuff/Stuff Community official landing page. Use the buttons above to navigate.</p>
-    </section>
+<header class="top-banner" role="banner">
+  An official website of the RSC
+</header>
 
-    <section id="filereport" class="page" hidden>
-      <h2>File a RSC License Violation</h2>
-      <p>If you believe someone violated the RSC License, fill the details below.</p>
-      <form id="reportForm" onsubmit="return false;">
-        <label>Reported Resource URL<br>
-          <input type="text" id="resourceUrl" placeholder="https://example.com/asset" />
-        </label>
-        <br>
-        <label>Description<br>
-          <textarea id="reportDesc" rows="6" placeholder="Explain the violation..."></textarea>
-        </label>
-        <br>
-        <button type="button" class="action-btn" id="fakeSubmit">Submit Report</button>
-      </form>
-    </section>
+<nav class="banner-nav" role="navigation" aria-label="Main navigation">
+  <a href="https://rscommunity.odbit.club/filereport" target="_blank" rel="noopener noreferrer">File a RSC License Violation</a>
+  <a href="https://rscommunity.odbit.club/abt" target="_blank" rel="noopener noreferrer">About</a>
+  <a href="https://rscommunity.odbit.club/utils" target="_blank" rel="noopener noreferrer">Utilities</a>
+</nav>
 
-    <section id="abt" class="page" hidden>
-      <h2>About RSC</h2>
-      <p>RSC — Random Stuff/Stuff Community — is a community-run collective for sharing small personal projects. The RSC License governs redistribution of code and assets.</p>
-    </section>
+<main role="main">
 
-    <section id="utils" class="page" hidden>
-      <h2>Utilities</h2>
+  <!-- HOME CONTENT -->
+  <section id="home">
+    <h1>Welcome to the RSC Official Website</h1>
+    <p>This is the homepage content.</p>
+  </section>
+
+  <!-- FILEREPORT - form posts to Firestore (needs your firebase config in JS) -->
+  <section id="filereport">
+    <h1>File a RSC License Violation</h1>
+    <form id="reportForm">
+      <label for="reportUrl">Report URL</label>
+      <input type="text" id="reportUrl" name="reportUrl" required placeholder="URL of violation (e.g. profile link)">
+
+      <label for="reportBody">Report Details</label>
+      <textarea id="reportBody" name="reportBody" required placeholder="Describe the violation"></textarea>
+
+      <button type="submit">Submit Report</button>
+    </form>
+    <p id="reportStatus"></p>
+  </section>
+
+  <!-- ABOUT CONTENT -->
+  <section id="abt">
+    <h1>About RSC</h1>
+    <p>The Random Stuff Community (RSC) is a group dedicated to...</p>
+    <!-- Add your actual about text here -->
+  </section>
+
+  <!-- UTILITIES PAGE -->
+  <section id="utils">
+    <h1>Utilities</h1>
+
+    <div class="treeview" role="tree">
       <ul>
-        <li><strong>License checker</strong> — (demo) verify license text</li>
-        <li><strong>Contact</strong> — reach out to the RSC admins</li>
+        <li tabindex="0" aria-expanded="false" aria-label="main" id="tree-main">
+          main
+          <ul>
+            <li tabindex="0" aria-label="license template" id="tree-license-template">
+              license template
+              <pre>
+RSC License
+
+Copyright (c) 2025 Random Stuff Community Corp.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, and merge copies of the Software, subject to the following conditions:
+
+Acknowledging that redistributing this software in any way, shape, or form is against the RSC License and the author of this Software can (and should) demand to cease and desist of the obtained software that is being redistributed,
+
+the above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+              </pre>
+            </li>
+          </ul>
+        </li>
       </ul>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <footer class="site-footer" role="contentinfo">
-    <small>© 2025 Random Stuff Community</small>
-  </footer>
+</main>
 
-  <script src="script.js"></script>
-  <script>
-    // Override previous demo submit button behavior
-    document.getElementById('fakeSubmit').addEventListener('click', () => {
-      window.submitRSCReport();
+<script type="module">
+  // Firebase config - your web app's Firebase configuration
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCQLM5dle_c3ZEdK4SrxwE4FRj2KOLoVDU",
+    authDomain: "rsc-sd-b-a-d.firebaseapp.com",
+    projectId: "rsc-sd-b-a-d",
+    storageBucket: "rsc-sd-b-a-d.firebasestorage.app",
+    messagingSenderId: "304652298603",
+    appId: "1:304652298603:web:bdcb6e1c1f6e10de4b842e"
+  };
+
+  // Initialize Firebase and Firestore
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Report form submission handler
+  const reportForm = document.getElementById("reportForm");
+  const reportStatus = document.getElementById("reportStatus");
+
+  reportForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const reportUrl = document.getElementById("reportUrl").value.trim();
+    const reportBody = document.getElementById("reportBody").value.trim();
+    const reportNum = Math.floor(Math.random() * 1000000);
+
+    if (!reportUrl || !reportBody) {
+      reportStatus.textContent = "Please fill out all fields.";
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "reports"), {
+        reporturl: reportUrl,
+        reportbody: reportBody,
+        reportnum: reportNum,
+        date: new Date().toISOString()
+      });
+      reportStatus.textContent = "Report submitted successfully! Thank you.";
+      reportForm.reset();
+    } catch (error) {
+      reportStatus.textContent = "Error submitting report: " + error.message;
+    }
+  });
+</script>
+
+<script>
+  // Treeview expand/collapse
+  document.querySelectorAll(".treeview li").forEach(li => {
+    li.addEventListener("click", () => {
+      li.classList.toggle("expanded");
+      const expanded = li.classList.contains("expanded");
+      li.setAttribute("aria-expanded", expanded);
     });
-  </script>
+    li.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        li.classList.toggle("expanded");
+        const expanded = li.classList.contains("expanded");
+        li.setAttribute("aria-expanded", expanded);
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
