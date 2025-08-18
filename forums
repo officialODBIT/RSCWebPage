@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSC Developer Forum</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #dc2626;
+        }
+
+        .btn-primary:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #dc2626;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-section h1 {
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            color: #6b7280;
+        }
+
+        .posts-section {
+            margin-top: 2rem;
+        }
+
+        .add-post-btn {
+            background: #dc2626;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .add-post-btn:hover {
+            background: #b91c1c;
+        }
+
+        .post {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #dc2626;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .username {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .verified-badge {
+            color: #10b981;
+            font-size: 1rem;
+        }
+
+        .post-content {
+            color: #374151;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .close-btn:hover {
+            color: #374151;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #fecaca;
+        }
+
+        .success {
+            background: #f0fdf4;
+            color: #16a34a;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #bbf7d0;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: white;
+        }
+
+        .welcome-text {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">RSC</div>
+            <div class="auth-section">
+                <div id="logged-out-buttons" class="auth-buttons">
+                    <button class="btn btn-primary" onclick="openLoginModal()">Login</button>
+                    <button class="btn btn-secondary" onclick="openSignupModal()">Sign Up</button>
+                </div>
+                <div id="logged-in-info" class="user-info hidden">
+                    <span class="welcome-text">Welcome, <span id="current-username"></span><span id="user-verified-badge"></span></span>
+                    <button class="btn btn-danger" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="welcome-section">
+            <h1>RSC Developer Forum</h1>
+            <p>Connect, share, and collaborate with fellow developers</p>
+        </div>
+
+        <div id="auth-required-message" class="posts-section">
+            <div class="post">
+                <div class="post-content">
+                    Please log in or sign up to view and create posts.
+                </div>
+            </div>
+        </div>
+
+        <div id="main-content" class="hidden">
+            <button class="btn add-post-btn" onclick="openAddPostModal()">Add Post</button>
+            
+            <div class="posts-section">
+                <div id="loading" class="loading">Loading posts...</div>
+                <div id="posts-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            <div class="modal-header">
+                <h2>Login to RSC</h2>
+                <p>Welcome back to the developer community</p>
+            </div>
+            <div id="login-error" class="error hidden"></div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginUsername">Username</label>
+                    <input type="text" id="loginUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('loginModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('signupModal')">&times;</button>
+            <div class="modal-header">
+                <h2>Join RSC</h2>
+                <p>Create your developer account</p>
+            </div>
+            <div id="signup-error" class="error hidden"></div>
+            <div id="signup-success" class="success hidden"></div>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signupUsername">Username</label>
+                    <input type="text" id="signupUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('signupModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Sign Up</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Post Modal -->
+    <div id="addPostModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal('addPostModal')">&times;</button>
+            <div class="modal-header">
+                <h2>Create New Post</h2>
+                <p>Share your thoughts with the community</p>
+            </div>
+            <div id="post-error" class="error hidden"></div>
+            <form id="addPostForm">
+                <div class="form-group">
+                    <label for="postContent">Content</label>
+                    <textarea id="postContent" placeholder="What's on your mind?" required></textarea>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addPostModal')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Post</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCLnpF2mFBCiI64AGyXKW6eHRALWG9FMY8",
+            authDomain: "rsc-lorox-d-b.firebaseapp.com",
+            projectId: "rsc-lorox-d-b",
+            storageBucket: "rsc-lorox-d-b.firebasestorage.app",
+            messagingSenderId: "368502596411",
+            appId: "1:368502596411:web:c255bb574aff64032a4d1e",
+            measurementId: "G-DJ5C2VESTD"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Global variables
+        window.db = db;
+        window.currentUser = null;
+
+        // Authentication functions
+        window.login = async function(username, password) {
+            try {
+                const usersRef = collection(db, 'users');
+                const snapshot = await getDocs(usersRef);
+                
+                let user = null;
+                snapshot.forEach((doc) => {
+                    const userData = doc.data();
+                    if (userData.Username === username && userData.password === password) {
+                        user = { id: doc.id, ...userData };
+                    }
+                });
+
+                if (user) {
+                    window.currentUser = user;
+                    updateAuthUI();
+                    loadPosts();
+                    return { success: true };
+                } else {
+                    return { success: false, error: 'Invalid username or password' };
+                }
+            } catch (error) {
+                return { success: false, error: 'Login failed. Please try again.' };
+            }
+        };
+
+        window.signup = async function(username, password) {
+            try {
+                // Check if username already exists
+                const usersRef = collection(db, 'users');
+                const snapshot = await getDocs(usersRef);
+                
+                let userExists = false;
+                snapshot.forEach((doc) => {
+                    if (doc.data().Username === username) {
+                        userExists = true;
+                    }
+                });
+
+                if (userExists) {
+                    return { success: false, error: 'Username already exists' };
+                }
+
+                // Create new user
+                await addDoc(usersRef, {
+                    Username: username,
+                    password: password,
+                    Verified: false
+                });
+
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: 'Signup failed. Please try again.' };
+            }
+        };
+
+        window.logout = function() {
+            window.currentUser = null;
+            updateAuthUI();
+            document.getElementById('posts-container').innerHTML = '';
+        };
+
+        window.addPost = async function(content) {
+            try {
+                if (!window.currentUser) {
+                    return { success: false, error: 'You must be logged in to post' };
+                }
+
+                const userRef = doc(db, 'users', window.currentUser.id);
+                
+                await addDoc(collection(db, 'posts'), {
+                    by: userRef,
+                    content: content,
+                    time_made: new Date()
+                });
+
+                return { success: true };
+            } catch (error) {
+                return { success: false, error: 'Failed to create post. Please try again.' };
+            }
+        };
+
+        window.loadPosts = async function() {
+            try {
+                document.getElementById('loading').style.display = 'block';
+                const postsContainer = document.getElementById('posts-container');
+                postsContainer.innerHTML = '';
+
+                const postsRef = collection(db, 'posts');
+                const q = query(postsRef, orderBy('time_made', 'desc'));
+                const snapshot = await getDocs(q);
+
+                for (const postDoc of snapshot.docs) {
+                    const postData = postDoc.data();
+                    
+                    // Get user data
+                    const userDoc = await getDoc(postData.by);
+                    const userData = userDoc.data();
+
+                    const postElement = document.createElement('div');
+                    postElement.className = 'post';
+                    
+                    const verifiedBadge = userData.Verified ? ' <span class="verified-badge">✓</span>' : '';
+                    const timeString = postData.time_made.toDate().toLocaleString();
+
+                    postElement.innerHTML = `
+                        <div class="post-header">
+                            <span class="username">${userData.Username}${verifiedBadge}</span>
+                            <span>•</span>
+                            <span>${timeString}</span>
+                        </div>
+                        <div class="post-content">${postData.content}</div>
+                    `;
+
+                    postsContainer.appendChild(postElement);
+                }
+
+                document.getElementById('loading').style.display = 'none';
+            } catch (error) {
+                document.getElementById('loading').innerHTML = 'Failed to load posts.';
+            }
+        };
+
+        function updateAuthUI() {
+            const loggedOutButtons = document.getElementById('logged-out-buttons');
+            const loggedInInfo = document.getElementById('logged-in-info');
+            const authRequiredMessage = document.getElementById('auth-required-message');
+            const mainContent = document.getElementById('main-content');
+
+            if (window.currentUser) {
+                loggedOutButtons.classList.add('hidden');
+                loggedInInfo.classList.remove('hidden');
+                authRequiredMessage.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+                
+                document.getElementById('current-username').textContent = window.currentUser.Username;
+                const verifiedBadge = window.currentUser.Verified ? ' ✓' : '';
+                document.getElementById('user-verified-badge').innerHTML = verifiedBadge;
+            } else {
+                loggedOutButtons.classList.remove('hidden');
+                loggedInInfo.classList.add('hidden');
+                authRequiredMessage.classList.remove('hidden');
+                mainContent.classList.add('hidden');
+            }
+        }
+
+        // Initialize
+        updateAuthUI();
+    </script>
+
+    <script>
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = 'auto';
+            
+            // Clear forms and messages
+            const form = document.querySelector(`#${modalId} form`);
+            if (form) form.reset();
+            
+            const errorEl = document.querySelector(`#${modalId} .error`);
+            if (errorEl) {
+                errorEl.classList.add('hidden');
+                errorEl.textContent = '';
+            }
+            
+            const successEl = document.querySelector(`#${modalId} .success`);
+            if (successEl) {
+                successEl.classList.add('hidden');
+                successEl.textContent = '';
+            }
+        }
+
+        function openLoginModal() {
+            openModal('loginModal');
+        }
+
+        function openSignupModal() {
+            openModal('signupModal');
+        }
+
+        function openAddPostModal() {
+            openModal('addPostModal');
+        }
+
+        // Form handlers
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorEl = document.getElementById('login-error');
+            
+            const result = await login(username, password);
+            
+            if (result.success) {
+                closeModal('loginModal');
+            } else {
+                errorEl.textContent = result.error;
+                errorEl.classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const errorEl = document.getElementById('signup-error');
+            const successEl = document.getElementById('signup-success');
+            
+            const result = await signup(username, password);
+            
+            if (result.success) {
+                successEl.textContent = 'Account created successfully! You can now log in.';
+                successEl.classList.remove('hidden');
+                errorEl.classList.add('hidden');
+                document.getElementById('signupForm').reset();
+                
+                setTimeout(() => {
+                    closeModal('signupModal');
+                    openLoginModal();
+                }, 2000);
+            } else {
+                errorEl.textContent = result.error;
+                errorEl.classList.remove('hidden');
+                successEl.classList.add('hidden');
+            }
+        });
+
+        document.getElementById('addPostForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const content = document.getElementById('postContent').value;
+            const errorEl = document.getElementById('post-error');
+            
+            const result = await addPost(content);
+            
+            if (result.success) {
+                closeModal('addPostModal');
+                loadPosts(); // Reload posts to show the new one
+            } else {
+                errorEl.textContent = result.error;
+                errorEl.classList.remove('hidden');
+            }
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                const modalId = e.target.id;
+                closeModal(modalId);
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const openModal = document.querySelector('.modal[style*="block"]');
+                if (openModal) {
+                    closeModal(openModal.id);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
