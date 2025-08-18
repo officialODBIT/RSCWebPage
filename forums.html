@@ -403,8 +403,8 @@
 
     <!-- Firebase Scripts -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, doc, getDoc, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
         
         const firebaseConfig = {
             apiKey: "AIzaSyCLnpF2mFBCiI64AGyXKW6eHRALWG9FMY8",
@@ -416,8 +416,10 @@
             measurementId: "G-DJ5C2VESTD"
         };
 
+        console.log("Initializing Firebase...");
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        console.log("Firebase initialized successfully");
 
         // Global variables
         window.db = db;
@@ -425,68 +427,81 @@
 
         // Authentication functions
         window.login = async function(username, password) {
+            console.log("Attempting login for:", username);
             try {
                 const usersRef = collection(db, 'users');
                 const snapshot = await getDocs(usersRef);
+                console.log("Users collection size:", snapshot.size);
                 
                 let user = null;
-                snapshot.forEach((doc) => {
-                    const userData = doc.data();
+                snapshot.forEach((docSnap) => {
+                    const userData = docSnap.data();
+                    console.log("Checking user:", userData.Username);
                     if (userData.Username === username && userData.password === password) {
-                        user = { id: doc.id, ...userData };
+                        user = { id: docSnap.id, ...userData };
                     }
                 });
 
                 if (user) {
+                    console.log("Login successful for:", user.Username);
                     window.currentUser = user;
                     updateAuthUI();
-                    loadPosts();
+                    await loadPosts();
                     return { success: true };
                 } else {
+                    console.log("Login failed: Invalid credentials");
                     return { success: false, error: 'Invalid username or password' };
                 }
             } catch (error) {
+                console.error("Login error:", error);
                 return { success: false, error: 'Login failed. Please try again.' };
             }
         };
 
         window.signup = async function(username, password) {
+            console.log("Attempting signup for:", username);
             try {
                 // Check if username already exists
                 const usersRef = collection(db, 'users');
                 const snapshot = await getDocs(usersRef);
                 
                 let userExists = false;
-                snapshot.forEach((doc) => {
-                    if (doc.data().Username === username) {
+                snapshot.forEach((docSnap) => {
+                    if (docSnap.data().Username === username) {
                         userExists = true;
                     }
                 });
 
                 if (userExists) {
+                    console.log("Signup failed: Username exists");
                     return { success: false, error: 'Username already exists' };
                 }
 
                 // Create new user
-                await addDoc(usersRef, {
+                const docRef = await addDoc(usersRef, {
                     Username: username,
                     password: password,
                     Verified: false
                 });
 
+                console.log("User created with ID:", docRef.id);
                 return { success: true };
             } catch (error) {
+                console.error("Signup error:", error);
                 return { success: false, error: 'Signup failed. Please try again.' };
             }
         };
 
         window.logout = function() {
+            console.log("Logging out user");
             window.currentUser = null;
             updateAuthUI();
             document.getElementById('posts-container').innerHTML = '';
+            document.getElementById('loading').style.display = 'none';
         };
 
         window.addPost = async function(content) {
+            console.log("Adding post:", content.substring(0, 50) + "...");
             try {
                 if (!window.currentUser) {
                     return { success: false, error: 'You must be logged in to post' };
@@ -494,19 +509,22 @@
 
                 const userRef = doc(db, 'users', window.currentUser.id);
                 
-                await addDoc(collection(db, 'posts'), {
+                const docRef = await addDoc(collection(db, 'posts'), {
                     by: userRef,
                     content: content,
-                    time_made: new Date()
+                    time_made: Timestamp.now()
                 });
 
+                console.log("Post created with ID:", docRef.id);
                 return { success: true };
             } catch (error) {
+                console.error("Add post error:", error);
                 return { success: false, error: 'Failed to create post. Please try again.' };
             }
         };
 
         window.loadPosts = async function() {
+            console.log("Loading posts...");
             try {
                 document.getElementById('loading').style.display = 'block';
                 const postsContainer = document.getElementById('posts-container');
@@ -516,38 +534,58 @@
                 const q = query(postsRef, orderBy('time_made', 'desc'));
                 const snapshot = await getDocs(q);
 
+                console.log("Found", snapshot.size, "posts");
+
+                if (snapshot.empty) {
+                    document.getElementById('loading').innerHTML = 'No posts yet. Be the first to post!';
+                    return;
+                }
+
                 for (const postDoc of snapshot.docs) {
                     const postData = postDoc.data();
+                    console.log("Processing post:", postDoc.id);
                     
-                    // Get user data
-                    const userDoc = await getDoc(postData.by);
-                    const userData = userDoc.data();
+                    try {
+                        // Get user data
+                        const userDoc = await getDoc(postData.by);
+                        if (!userDoc.exists()) {
+                            console.error("User not found for post:", postDoc.id);
+                            continue;
+                        }
+                        
+                        const userData = userDoc.data();
 
-                    const postElement = document.createElement('div');
-                    postElement.className = 'post';
-                    
-                    const verifiedBadge = userData.Verified ? ' <span class="verified-badge">✓</span>' : '';
-                    const timeString = postData.time_made.toDate().toLocaleString();
+                        const postElement = document.createElement('div');
+                        postElement.className = 'post';
+                        
+                        const verifiedBadge = userData.Verified ? ' <span class="verified-badge">✓</span>' : '';
+                        const timeString = postData.time_made.toDate().toLocaleString();
 
-                    postElement.innerHTML = `
-                        <div class="post-header">
-                            <span class="username">${userData.Username}${verifiedBadge}</span>
-                            <span>•</span>
-                            <span>${timeString}</span>
-                        </div>
-                        <div class="post-content">${postData.content}</div>
-                    `;
+                        postElement.innerHTML = `
+                            <div class="post-header">
+                                <span class="username">${userData.Username}${verifiedBadge}</span>
+                                <span>•</span>
+                                <span>${timeString}</span>
+                            </div>
+                            <div class="post-content">${postData.content}</div>
+                        `;
 
-                    postsContainer.appendChild(postElement);
+                        postsContainer.appendChild(postElement);
+                    } catch (userError) {
+                        console.error("Error processing user data for post:", postDoc.id, userError);
+                    }
                 }
 
                 document.getElementById('loading').style.display = 'none';
+                console.log("Posts loaded successfully");
             } catch (error) {
+                console.error("Load posts error:", error);
                 document.getElementById('loading').innerHTML = 'Failed to load posts.';
             }
         };
 
-        function updateAuthUI() {
+        window.updateAuthUI = function() {
+            console.log("Updating auth UI, current user:", window.currentUser ? window.currentUser.Username : "none");
             const loggedOutButtons = document.getElementById('logged-out-buttons');
             const loggedInInfo = document.getElementById('logged-in-info');
             const authRequiredMessage = document.getElementById('auth-required-message');
@@ -568,10 +606,22 @@
                 authRequiredMessage.classList.remove('hidden');
                 mainContent.classList.add('hidden');
             }
-        }
+        };
 
         // Initialize
-        updateAuthUI();
+        console.log("Initializing page...");
+        window.updateAuthUI();
+        
+        // Test database connection
+        setTimeout(async () => {
+            try {
+                console.log("Testing database connection...");
+                const testQuery = await getDocs(collection(db, 'users'));
+                console.log("Database connection successful, users found:", testQuery.size);
+            } catch (error) {
+                console.error("Database connection failed:", error);
+            }
+        }, 1000);
     </script>
 
     <script>
