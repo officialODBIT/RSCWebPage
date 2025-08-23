@@ -44,7 +44,7 @@
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 > SOFTWARE.
 
-
+> [!IMPORTANT]
 RSC License to copy for quick copy:
 ```
 RSC License
