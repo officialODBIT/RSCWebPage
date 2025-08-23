@@ -45,6 +45,9 @@
 > SOFTWARE.
 
 > [!IMPORTANT]
+> The RSC License is a modified MIT template for your own personal use.
+> If MIT has a problem with our license, please reach out and we will do our best to fix the problem.
+
 RSC License to copy for quick copy:
 ```
 RSC License
